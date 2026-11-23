@@ -49,6 +49,23 @@ class LocationTest {
         assertEquals(maximum, maximum.goDown());
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "5, 5, 5, 5, 0",
+            "2, 3, 4, 3, 2",
+            "2, 3, 2, 6, 3",
+            "2, 3, 4, 6, 5",
+            "4, 6, 2, 3, 5",
+            "2, 6, 4, 3, 5",
+            "1, 1, 10, 10, 18"
+    })
+    void calculatesDistance(int fromX, int fromY, int toX, int toY, int expectedDistance) {
+        var from = Location.mustCreate(fromX, fromY);
+        var to = Location.mustCreate(toX, toY);
+
+        assertEquals(expectedDistance, from.distanceTo(to));
+    }
+
     @Test
     void comparesLocationsByBothCoordinates() {
         var location = Location.mustCreate(4, 5);

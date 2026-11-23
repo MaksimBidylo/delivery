@@ -37,7 +37,7 @@ public class Location extends ValueObject<Location> {
     }
 
     private static Result<Void, Error> validateCoordinate(int coordinate, String name) {
-        var err = Guard.againstOutOfRange(coordinate, Location.MIN_COORDINATE, Location.MAX_COORDINATE, name);
+        var err = Guard.againstOutOfRange(coordinate, MIN_COORDINATE, MAX_COORDINATE, name);
         if (err != null) {
             return Result.failure(err);
         }
@@ -45,27 +45,32 @@ public class Location extends ValueObject<Location> {
     }
 
     public Location goLeft() {
-        return this.horizontalCoordinate - 1 >= Location.MIN_COORDINATE
-                ? mustCreate(this.horizontalCoordinate - 1, this.verticalCoordinate)
+        return horizontalCoordinate - 1 >= MIN_COORDINATE
+                ? mustCreate(horizontalCoordinate - 1, verticalCoordinate)
                 : this;
     }
 
     public Location goRight() {
-        return this.horizontalCoordinate + 1 <= Location.MAX_COORDINATE
-                ? mustCreate(this.horizontalCoordinate + 1, this.verticalCoordinate)
+        return horizontalCoordinate + 1 <= MAX_COORDINATE
+                ? mustCreate(horizontalCoordinate + 1, verticalCoordinate)
                 : this;
     }
 
     public Location goUp() {
-        return this.verticalCoordinate - 1 >= Location.MIN_COORDINATE
-                ? mustCreate(this.horizontalCoordinate, this.verticalCoordinate - 1)
+        return verticalCoordinate - 1 >= MIN_COORDINATE
+                ? mustCreate(horizontalCoordinate, verticalCoordinate - 1)
                 : this;
     }
 
     public Location goDown() {
-        return this.verticalCoordinate + 1 <= Location.MAX_COORDINATE
-                ? mustCreate(this.horizontalCoordinate, this.verticalCoordinate + 1)
+        return verticalCoordinate + 1 <= MAX_COORDINATE
+                ? mustCreate(horizontalCoordinate, verticalCoordinate + 1)
                 : this;
+    }
+
+    public int distanceTo(Location other) {
+        return Math.abs(horizontalCoordinate - other.horizontalCoordinate)
+                + Math.abs(verticalCoordinate - other.verticalCoordinate);
     }
 
     @Override

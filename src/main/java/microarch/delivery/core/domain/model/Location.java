@@ -21,27 +21,21 @@ public class Location extends ValueObject<Location> {
     private final int verticalCoordinate;
 
     public static Result<Location, Error> create(int horizontalCoordinate, int verticalCoordinate) {
-        var result = validateCoordinate(horizontalCoordinate, "horizontalCoordinate");
-        if (result.isFailure()) {
-            return Result.failure(result.getError());
+        var error = Guard.againstOutOfRange(
+                horizontalCoordinate, MIN_COORDINATE, MAX_COORDINATE, "horizontalCoordinate");
+        if (error != null) {
+            return Result.failure(error);
         }
-        result = validateCoordinate(verticalCoordinate, "verticalCoordinate");
-        if (result.isFailure()) {
-            return Result.failure(result.getError());
+        error = Guard.againstOutOfRange(
+                verticalCoordinate, MIN_COORDINATE, MAX_COORDINATE, "verticalCoordinate");
+        if (error != null) {
+            return Result.failure(error);
         }
         return Result.success(new Location(horizontalCoordinate, verticalCoordinate));
     }
 
     public static Location mustCreate(int horizontalCoordinate, int verticalCoordinate) {
         return create(horizontalCoordinate, verticalCoordinate).getValueOrThrow();
-    }
-
-    private static Result<Void, Error> validateCoordinate(int coordinate, String name) {
-        var err = Guard.againstOutOfRange(coordinate, MIN_COORDINATE, MAX_COORDINATE, name);
-        if (err != null) {
-            return Result.failure(err);
-        }
-        return Result.success();
     }
 
     public Location goLeft() {

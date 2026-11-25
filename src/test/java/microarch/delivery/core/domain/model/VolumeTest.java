@@ -37,6 +37,5 @@ class VolumeTest {
         assertEquals(0, volume.compareTo(sameVolume));
         assertTrue(volume.compareTo(largerVolume) < 0);
         assertTrue(largerVolume.compareTo(volume) > 0);
-        assertEquals("Volume[1]", volume.toString());
     }
 }

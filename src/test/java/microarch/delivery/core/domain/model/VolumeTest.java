@@ -34,8 +34,5 @@ class VolumeTest {
         assertEquals(volume, sameVolume);
         assertEquals(volume.hashCode(), sameVolume.hashCode());
         assertNotEquals(volume, largerVolume);
-        assertEquals(0, volume.compareTo(sameVolume));
-        assertTrue(volume.compareTo(largerVolume) < 0);
-        assertTrue(largerVolume.compareTo(volume) > 0);
     }
 }

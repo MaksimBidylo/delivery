@@ -13,9 +13,9 @@ import java.util.UUID;
 @Getter
 public class Assignment extends BaseEntity<UUID> {
 
-    private UUID orderId;
-    private Volume volume;
-    private Location location;
+    private final UUID orderId;
+    private final Volume volume;
+    private final Location location;
     private AssigmentStatus status;
 
     private Assignment(UUID orderId, Volume volume, Location location) {

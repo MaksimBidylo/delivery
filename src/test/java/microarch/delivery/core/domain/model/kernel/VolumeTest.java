@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model;
+package microarch.delivery.core.domain.model.kernel;
 
 import libs.errs.GeneralErrors;
 import org.junit.jupiter.api.Test;
@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class VolumeTest {
 
     @ParameterizedTest
-    @ValueSource(ints = {1, Integer.MAX_VALUE})
-    void createsPositiveVolume(int value) {
+    @ValueSource(ints = {0, 1, Integer.MAX_VALUE})
+    void createsNonNegativeVolume(int value) {
         var result = Volume.create(value);
 
         assertTrue(result.isSuccess());
@@ -22,19 +22,20 @@ class VolumeTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {0, -1, Integer.MIN_VALUE})
-    void rejectsNonPositiveVolume(int value) {
+    @ValueSource(ints = {-1, Integer.MIN_VALUE})
+    void rejectsNegativeVolume(int value) {
         assertTrue(Volume.create(value).isFailure());
     }
 
-    @Test
-    void increasesByOneWithoutChangingOriginalVolume() {
-        var volume = Volume.create(5).getValueOrThrow();
+    @ParameterizedTest
+    @CsvSource({"0, 1, 1", "0, 2147483647, 2147483647", "5, 1, 6"})
+    void increasesWithoutChangingOriginalVolume(int initialValue, int increase, int expectedValue) {
+        var volume = Volume.create(initialValue).getValueOrThrow();
 
-        var increased = volume.increase(1).getValueOrThrow();
+        var increased = volume.increase(increase).getValueOrThrow();
 
-        assertEquals(6, increased.getValue());
-        assertEquals(5, volume.getValue());
+        assertEquals(expectedValue, increased.getValue());
+        assertEquals(initialValue, volume.getValue());
     }
 
     @ParameterizedTest
@@ -49,7 +50,7 @@ class VolumeTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"5, 1, 4", "5, 4, 1", "2147483647, 2147483646, 1"})
+    @CsvSource({"5, 1, 4", "5, 4, 1", "5, 5, 0", "2147483647, 2147483646, 1", "2147483647, 2147483647, 0"})
     void decreasesWithoutChangingOriginalVolume(int initialValue, int decrease, int expectedValue) {
         var volume = Volume.create(initialValue).getValueOrThrow();
 
@@ -72,15 +73,15 @@ class VolumeTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {5, 6, Integer.MAX_VALUE})
-    void rejectsDecreaseToZeroOrBelow(int value) {
-        var volume = Volume.create(5).getValueOrThrow();
+    @CsvSource({"0, 1", "5, 6", "5, 2147483647"})
+    void rejectsDecreaseBelowZero(int initialValue, int value) {
+        var volume = Volume.create(initialValue).getValueOrThrow();
 
         var result = volume.decrease(value);
 
         assertTrue(result.isFailure());
-        assertEquals(GeneralErrors.valueMustBeLessThan("value", value, 5), result.getError());
-        assertEquals(5, volume.getValue());
+        assertEquals(GeneralErrors.valueMustBeLessOrEqual("value", value, initialValue), result.getError());
+        assertEquals(initialValue, volume.getValue());
     }
 
     @Test

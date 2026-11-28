@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model;
+package microarch.delivery.core.domain.model.kernel;
 
 import libs.errs.GeneralErrors;
 import org.junit.jupiter.api.Test;
@@ -59,7 +59,7 @@ class AssignmentTest {
             assertEquals("value.must.be.less.or.equal", result.getError().getCode());
         }
         if (expectedSuccess) {
-            assertEquals(AssigmentStatus.COMPLETED, assignment.getStatus());
+            assertEquals(AssignmentStatus.COMPLETED, assignment.getStatus());
         }
     }
 }

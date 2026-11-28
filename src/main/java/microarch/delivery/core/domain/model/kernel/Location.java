@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model;
+package microarch.delivery.core.domain.model.kernel;
 
 import libs.ddd.ValueObject;
 import libs.errs.Error;

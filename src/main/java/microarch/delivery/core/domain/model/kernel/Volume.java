@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model;
+package microarch.delivery.core.domain.model.kernel;
 
 import libs.ddd.ValueObject;
 import libs.errs.Error;
@@ -15,14 +15,20 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Volume extends ValueObject<Volume> {
 
+    public static final Volume ZERO_VOLUME = new Volume(0);
+
     private final int value;
 
     public static Result<Volume, Error> create(int value) {
-        var err = Guard.againstOutOfRange(value, 1, Integer.MAX_VALUE, "value");
+        var err = Guard.againstOutOfRange(value, 0, Integer.MAX_VALUE, "value");
         if (err != null) {
             return Result.failure(err);
         }
         return Result.success(new Volume(value));
+    }
+
+    public Result<Volume, Error> increase(Volume volume) {
+        return increase(volume.getValue());
     }
 
     public Result<Volume, Error> increase(int value) {
@@ -37,12 +43,16 @@ public class Volume extends ValueObject<Volume> {
         return Result.success(new Volume(this.value + value));
     }
 
+    public Result<Volume, Error> decrease(Volume volume) {
+        return decrease(volume.getValue());
+    }
+
     public Result<Volume, Error> decrease(int value) {
         if (value <= 0) {
             return Result.failure(GeneralErrors.valueMustBeGreaterThan("volume", value, 0));
         }
-        if (this.value <= value) {
-            return Result.failure(GeneralErrors.valueMustBeLessThan("value", value, this.value));
+        if (this.value < value) {
+            return Result.failure(GeneralErrors.valueMustBeLessOrEqual("value", value, this.value));
         }
         return Result.success(new Volume(this.value - value));
     }
